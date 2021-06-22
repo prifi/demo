@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-1
+  labels:
+    app: pod-1
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: k8s-node01
+  containers:
+  - name: busybox
+    image: busybox
+    command: [ "sleep", "3600s" ]
+    #- sleep
+    #- "3600s"

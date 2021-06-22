@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-https
+spec:
+  tls:
+  - hosts:
+    - www1.xiaotest.com
+    secretName: tls-secret
+  rules:
+  - host: www1.xiaotest.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx-svc
+          servicePort: 80

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: file-test-pod
+spec:
+  containers:
+  - name: test-container
+    image: harbor.xiaotest.com/library/myapp:v1
+    command: [ "/bin/sh", "-c", "ls /etc/config/" ]
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/config
+  volumes:
+  - name: config-volume
+    configMap:
+      name: special-config
+      # 自定义挂载文件名
+      items:
+      - key: special.type
+        path: custom.type
+      - key: special.how
+        path: custom.how
+  restartPolicy: Never

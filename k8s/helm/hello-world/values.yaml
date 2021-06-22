@@ -1,0 +1,3 @@
+image:
+  repository: harbor.xiaotest.com/library/myapp
+  tag: 'v2'

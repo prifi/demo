@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-rewrite
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: https://www1.xiaotest.com:32272/hostname.html
+spec:
+  rules:
+  - host: www3.xiaotest.com
+    http: 
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx-svc
+          servicePort: 80

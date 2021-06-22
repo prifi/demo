@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-aff
+  labels:
+    app: pod-aff
+spec:
+  containers:
+  - name: pod-aff
+    image: harbor.xiaotest.com/library/myapp:v1
+    imagePullPolicy: IfNotPresent
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - pod-1
+        topologyKey: kubernetes.io/hostname

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: deamonset-example
+  labels:
+   app: daemonset
+spec:
+  updateStrategy:
+#    type: RollingUpdate
+    type: OnDelete
+  selector:
+    matchLabels:
+      name: deamonset-example
+  template:
+    metadata:
+      labels:
+        name: deamonset-example
+    spec:  
+      containers:
+      - name: daemonset-example
+        image: harbor.xiaotest.com/library/myapp:v1 

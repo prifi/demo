@@ -1,0 +1,29 @@
+image:
+  repository: kubernetesui/dashboard
+  tag: v2.2.0
+  pullPolicy: IfNotPresent
+service:
+  # type: ClusterIP  # ingress使用此项
+  type: NodePort
+  nodePort: 32001
+  externalPort: 443
+  annotations: {}
+  labels: {}
+  clusterServiceLabel:
+    enabled: true
+    key: "kubernetes.io/cluster-service"
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  paths:
+    - /
+  customPaths: []
+  hosts:
+    - www.xiaotest.com # 你的域名
+  tls:
+    # 注意这个名字要跟前面新建的secret对上
+    - secretName: dashboard-tls
+      hosts:
+        - www.xiaotest.com # 你的域名

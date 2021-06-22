@@ -1,4 +1,4 @@
-# prometheus-configs
+## prometheus-configs
 ### Prometheus快速入门示例
 Prometheus配置文件示例：
 - files-sd：基于文件的服务发现配置示例；

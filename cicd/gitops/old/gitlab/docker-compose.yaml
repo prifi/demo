@@ -1,0 +1,72 @@
+version: '2.3'
+
+services:
+  redis:
+    restart: always
+    image: redis:5.0.9
+    command:
+    - --loglevel warning
+    volumes:
+    - redis-data:/var/lib/redis:Z
+
+  postgresql:
+    restart: always
+    image: sameersbn/postgresql:12-20200524
+    volumes:
+    - postgresql-data:/var/lib/postgresql:Z
+    environment:
+    - DB_USER=gitlab
+    - DB_PASS=P@ssw0rd
+    - DB_NAME=gitlabhq_production
+    - DB_EXTENSION=pg_trgm,btree_gist
+
+  gitlab:
+    restart: always
+    image: sameersbn/gitlab:13.10.3
+    depends_on:
+    - redis
+    - postgresql
+    ports:
+    - "10080:80"
+    - "10022:22"
+    volumes:
+    - gitlab-data:/home/git/data:Z
+    healthcheck:
+      test: ["CMD", "/usr/local/sbin/healthcheck"]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 5m
+    environment:
+    - DEBUG=false
+
+    - DB_ADAPTER=postgresql
+    - DB_HOST=postgresql
+    - DB_PORT=5432
+    - DB_USER=gitlab
+    - DB_PASS=P@ssw0rd
+    - DB_NAME=gitlabhq_production
+
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+
+    - TZ=Asia/Kolkata
+    - GITLAB_TIMEZONE=Kolkata
+
+    - GITLAB_HTTPS=false
+    - SSL_SELF_SIGNED=false
+
+    - GITLAB_HOST=localhost
+    - GITLAB_PORT=10080
+    - GITLAB_SSH_PORT=10022
+    - GITLAB_SECRETS_DB_KEY_BASE=lOvSSSps0H2USkAM/Uj8YUFLF8OKnqPhpLnhpn57GkM
+    - GITLAB_SECRETS_SECRET_KEY_BASE=TUE5i7ImpOIPK3zrvBNqTSOTZ27f4dNnzqSWz1zynAY
+    - GITLAB_SECRETS_OTP_KEY_BASE=iVzgMNPZ2n1JFMTKYmQETKyX/uimjJh0LyXEzifNhU4
+
+    - GITLAB_ROOT_PASSWORD=P@ssw0rd
+    - GITLAB_ROOT_EMAIL=xiaotest@examle.com
+
+volumes:
+  redis-data:
+  postgresql-data:
+  gitlab-data:

@@ -1,0 +1,48 @@
+pipeline {
+    environment {
+        appName = 'spring-boot-helloworld'
+        appVersion = 'v0.9.2'
+        registry = 'http://harbor.xiaotest.com'
+        registryCredential = 'harbor-admin'
+        dockerImage = ""
+    }
+    agent {
+        kubernetes {
+            inheritFrom 'maven-and-docker'
+        }
+    }
+    stages {
+        stage('Source') {
+            steps {
+                git branch: 'develop', url: 'http://gitlab.gitlab.svc.cluster.local/root/spring-boot-helloworld.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                container('maven') {
+                    sh 'mvn clean test package'
+                }
+            }
+        }
+        stage('Building app image') {
+            steps{
+                container('docker') {
+                    script {
+                        dockerImage = docker.build 'harbor.xiaotest.com/library/' + appName + ':' + appVersion
+                    }
+                }
+            }
+        }
+        stage('Push app iamge') {
+            steps {
+                container('docker') {
+                    script {
+                        docker.withRegistry(registry, registryCredential) {
+                            dockerImage.push()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

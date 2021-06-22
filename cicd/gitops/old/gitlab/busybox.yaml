@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-busybox
+  namespace: gitlab
+spec:
+  containers:
+  - name: busybox
+    image: busybox:latest
+    imagePullPolicy: IfNotPresent
+    command:
+    - sleep 
+    - "36000"
+    env:
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: gitlab
+          key: db_user
+    - name: DB_PASS
+      valueFrom:
+        secretKeyRef:
+          name: gitlab
+          key: db_pass
+    - name: GITLAB_ROOT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: gitlab
+          key: gitlab_root_pass
+    - name: GITLAB_SECRETS_OTP_KEY_BASE
+      # Be used to encrypt 2FA secrets in the database. "long-and-random-alpha-numeric-string"
+      valueFrom:
+        secretKeyRef:
+          name: gitlab
+          key: gitlab_secrets_otp_key_base
+    - name: GITLAB_SECRETS_DB_KEY_BASE
+      # Be used to encrypt CI secret variables, as well as import credentials, in the database.
+      valueFrom:
+        secretKeyRef:
+          name: gitlab
+          key: gitlab_secrets_db_key_base
+    - name: GITLAB_SECRETS_SECRET_KEY_BASE
+      # Be used for password reset links, and other 'standard' auth features.
+      valueFrom:
+        secretKeyRef:
+          name: gitlab
+          key: gitlab_secrets_secret_key_base

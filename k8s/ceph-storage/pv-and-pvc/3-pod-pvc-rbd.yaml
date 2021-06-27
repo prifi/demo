@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rbd1
+spec:
+  containers:
+    - image: nginx
+      imagePullPolicy: IfNotPresent
+      name: rbd-pvc-rw
+      ports:
+      - name: http
+        containerPort: 80
+      volumeMounts:
+      - name: rbdpvc
+        mountPath: /data
+  volumes:
+  - name: rbdpvc
+    persistentVolumeClaim:
+      claimName: pvc-demo

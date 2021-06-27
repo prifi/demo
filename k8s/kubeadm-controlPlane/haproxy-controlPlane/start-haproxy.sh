@@ -9,5 +9,5 @@ docker run -d --restart=always --name HAProxy-K8S -p 6444:6444 \
         -e MasterIP2=$MasterIP2 \
         -e MasterIP3=$MasterIP3 \
         -e MasterPort=$MasterPort \
-        -v `pwd`/etc/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg \
+        #-v `pwd`/etc/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg \
         wise2c/haproxy-k8s

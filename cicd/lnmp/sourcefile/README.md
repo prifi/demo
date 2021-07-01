@@ -5,9 +5,17 @@
 ```shell
 # nginx
 https://github.com/nginxinc/docker-nginx/blob/master/stable/debian/Dockerfile
+# 第三方
+https://github.com/markhilton/docker-nginx-pagespeed
+
 
 # php
 https://hub.docker.com/r/bitnami/php-fpm
+https://github.com/docker-library/php/tree/master/7.3/buster/fpm
+https://github.com/bitnami/bitnami-docker-php-fpm/blob/7.3.28-prod-debian-10-r30/7.3-prod/debian-10/Dockerfile
+## 第三方
+https://github.com/markhilton/docker-php-fpm/blob/master/7.3/Dockerfile
+
 
 # vue
 https://github.com/freekingg/vue-docker-deloy

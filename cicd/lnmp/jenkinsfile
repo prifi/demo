@@ -1,0 +1,94 @@
+pipeline {
+    
+    agent { label 'node-docker' }
+    
+    environment {
+        _gitlabUrl = ""
+        _harborUrl = ""
+        _harborAuth = ""
+        // 镜像名 & 容器名（小写） 
+        _containerName = "${JOB_NAME}"
+        _httpPort = 80
+        _appEnv = "dev"
+        _apiHost = ""
+        _apiIp = ""
+    }
+    
+    stages {
+
+        stage('Git Checkout') {
+            when { environment name: 'deploy_env', value: 'deploy' }
+            steps {
+                // 1.拉取代码
+                echo "== Checout Code [ ${_gitlabUrl} ] =="
+                git branch: "develop", credentialsId: "gitlab-auth", url: "${_gitlabUrl}"
+            }
+        }
+
+        stage('Build and Push Image') {
+            when { environment name: 'deploy_env', value: 'deploy' }
+            steps {
+                // 2.构建镜像上传
+                echo "== Build and Push Image =="
+                sh '''
+                    docker login ${_harborUrl} -u ${_harborAuth_USR} -p ${_harborAuth_PSW}
+                    cat << EOF |tee docker-compose.yml
+version: '3.3'
+services:
+  ${_containerName}:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${_harborUrl}/suppliychain/${_containerName}:${BUILD_ID}
+    container_name: ${_containerName}
+    ports:
+      - ${_httpPort}:80
+    restart: always
+    extra_hosts:
+      - "${_apiHost}:${_apiIp}"
+networks:
+  default:
+    external:
+      name: my-net
+EOF
+                    docker-compose build --no-cache --build-arg APP_ENV=${_appEnv} \
+                    && docker-compose push \
+                    && docker-compose up -d --no-build \
+                    && docker-compose ps
+                '''
+            }
+        }
+
+        stage('Rollback') {
+            when { environment name: 'deploy_env', value: 'rollback' }
+            steps {
+                // 3.回滚
+                echo "== Rollack =="
+                sh '''
+                    docker login ${_harborUrl} -u ${_harborAuth_USR} -p ${_harborAuth_PSW}
+                    cat << EOF |tee docker-compose.yml
+version: '3.3'
+services:
+  ${_containerName}:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${_harborUrl}/suppliychain/${_containerName}:${version}
+    container_name: ${_containerName}
+    ports:
+      - ${_httpPort}:80
+    restart: always
+    extra_hosts:
+      - "${_apiHost}:${_apiIp}"
+networks:
+  default:
+    external:
+      name: my-net
+EOF
+                    docker-compose up -d --no-build \
+                    && docker-compose ps
+                '''
+            }
+        }
+    }
+}

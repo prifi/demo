@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: my-lamp-site
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: node01
+  containers:
+  - name: test1
+    image: busybox
+    command: ["sh","-c","sleep 3600"]
+    volumeMounts:
+    - mountPath: /var/lib/aaa
+      name: site-data
+      subPath: aaa
+      readOnly: false
+  - name: test2
+    image: busybox
+    command: ["sh","-c","sleep 3600"]
+    volumeMounts:
+    - mountPath: /var/lib/bbb
+      name: site-data
+      subPath: bbb
+      readOnly: false
+  volumes:
+  - name: site-data
+#    persistentVolumeClaim:
+#      claimName: site-data-pv-claim
+    hostPath:
+      path: /data/volume
+      type: DirectoryOrCreate
